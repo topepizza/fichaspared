@@ -1,6 +1,7 @@
 // api/getData.js
 
-import { createClient } from "@supabase/supabase-js";
+import pkg from "@supabase/supabase-js";
+const { createClient } = pkg;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -17,7 +18,6 @@ export default async function handler(req, res) {
       throw error;
     }
 
-    // Convertimos a formato clave-valor
     const result = {};
     for (const row of data) {
       result[row.clave] = row.valor;
