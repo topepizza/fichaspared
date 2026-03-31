@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TopePizza · Fichas de Recetas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@400;600;700;800&family=Roboto+Mono:wght@400;700&family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════
+   VARIABLES Y RESET
+════════════════════════════════════════════════════════ */
+:root{
+  --ind-med-bg:#2D5016;
+  --border:#D5D0C8;
+  --text:#1A1A1A;
+  --muted:#888;
+  --card-min-h:420px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Open Sans',sans-serif;background:#E8E4DC;color:var(--text);overflow-x:hidden;}
+
+/* ════════════════════════════════════════════════════════
+   HEADER
+════════════════════════════════════════════════════════ */
+.app-header{
+  background:#1A1A2E;color:white;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:58px;
+  position:sticky;top:0;z-index:100;
+  border-bottom:3px solid #E8290B;gap:12px;
+}
+.logo{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:#FFD000;
+  cursor:pointer;user-select:none;white-space:nowrap;flex-shrink:0;transition:color .2s;
+}
+.logo:hover{color:#FFF;}
+.admin-active .logo{color:#FF9055;}
+.logo-badge{
+  display:none;font-family:'Open Sans',sans-serif;font-size:9px;font-weight:700;
+  background:#FF6B35;color:white;border-radius:3px;padding:1px 5px;
+  vertical-align:middle;margin-left:6px;letter-spacing:.5px;
+}
+.admin-active .logo-badge{display:inline;}
+.header-btns{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;}
+.btn{
+  padding:7px 14px;border-radius:5px;border:none;cursor:pointer;
+  font-family:'Open Sans',sans-serif;font-weight:700;font-size:13px;
+  transition:all .15s;white-space:nowrap;
+}
+.btn-add{background:#E8290B;color:white;}
+.btn-add:hover{background:#FF4422;}
+.btn-print{background:transparent;color:white;border:1.5px solid rgba(255,255,255,0.3);}
+.btn-print:hover{border-color:white;}
+
+/* Elementos visibles solo en modo admin */
+.admin-only{display:none !important;}
+.admin-active .admin-only{display:inline-flex !important;}
+
+/* ════════════════════════════════════════════════════════
+   BANNER MODO ADMIN
+════════════════════════════════════════════════════════ */
+.admin-banner{
+  display:none;background:#FF6B35;color:white;
+  padding:6px 24px;font-size:12px;font-weight:700;
+  align-items:center;gap:10px;flex-wrap:wrap;
+}
+.admin-banner.visible{display:flex;}
+.admin-banner-text{opacity:.9;font-weight:400;}
+.exit-admin-btn{
+  margin-left:auto;background:rgba(255,255,255,0.2);border:none;
+  color:white;border-radius:5px;padding:4px 12px;cursor:pointer;font-weight:700;
+  font-family:'Open Sans',sans-serif;font-size:12px;
+}
+.exit-admin-btn:hover{background:rgba(255,255,255,0.35);}
+
+/* ════════════════════════════════════════════════════════
+   BANNER EDICIÓN TIPOGRÁFICA
+════════════════════════════════════════════════════════ */
+.edit-banner{
+  display:none;background:#E8290B;color:white;padding:8px 24px;
+  font-size:13px;font-weight:700;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.edit-banner.visible{display:flex;}
+.edit-banner span{opacity:.85;font-weight:400;}
+.exit-edit-btn{
+  margin-left:auto;background:rgba(255,255,255,0.2);border:none;
+  color:white;border-radius:5px;padding:5px 14px;cursor:pointer;font-weight:700;
+  font-family:'Open Sans',sans-serif;font-size:13px;
+}
+.exit-edit-btn:hover{background:rgba(255,255,255,0.35);}
+
+/* ════════════════════════════════════════════════════════
+   TOOLBAR
+════════════════════════════════════════════════════════ */
+.toolbar{
+  display:flex;align-items:center;gap:8px;
+  padding:14px 24px 0;flex-wrap:wrap;
+}
+.search-input{
+  border:1.5px solid var(--border);border-radius:6px;padding:7px 12px;
+  font-size:13px;font-family:'Open Sans',sans-serif;
+  width:200px;outline:none;background:white;flex-shrink:0;
+}
+.search-input:focus{border-color:#E8290B;}
+.filter-group{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.filter-btn{
+  padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);
+  background:white;cursor:pointer;font-size:12px;font-weight:600;
+  color:var(--muted);transition:all .15s;font-family:'Open Sans',sans-serif;white-space:nowrap;
+}
+.filter-btn.on,.filter-btn:hover{background:#1A1A2E;color:white;border-color:#1A1A2E;}
+.sort-select{
+  border:1.5px solid var(--border);border-radius:6px;padding:5px 10px;
+  font-size:12px;font-family:'Open Sans',sans-serif;font-weight:600;
+  background:white;color:var(--text);cursor:pointer;outline:none;flex-shrink:0;
+}
+.count{
+  margin-left:auto;background:#1A1A2E;color:#FFD000;
+  padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;
+}
+
+/* ════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:#1A1A2E;color:#FFD000;padding:8px 22px;border-radius:20px;
+  font-size:13px;font-weight:700;z-index:999;
+  transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* ════════════════════════════════════════════════════════
+   GRID — tarjetas uniformes
+════════════════════════════════════════════════════════ */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;padding:16px 24px 40px;
+  align-items:start;
+}
+
+/* ════════════════════════════════════════════════════════
+   CARD WRAPPER
+════════════════════════════════════════════════════════ */
+.card{
+  background:transparent;border-radius:8px;overflow:visible;
+  border:none;box-shadow:none;
+  transition:transform .15s;position:relative;
+  min-height:var(--card-min-h);
+  display:flex;flex-direction:column;
+}
+.card:not(.edit-mode):hover{transform:translateY(-2px);}
+.card:not(.edit-mode):hover .flip-front{box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+.card.card-dragging{opacity:.35;}
+.card.card-dragover .flip-front{outline:3px solid #E8290B;outline-offset:2px;}
+.card.edit-mode .flip-front{box-shadow:0 0 0 3px #E8290B,0 6px 24px rgba(232,41,11,0.2);}
+
+/* ════════════════════════════════════════════════════════
+   FLIP CARD
+════════════════════════════════════════════════════════ */
+.flip-wrapper{perspective:1200px;position:relative;flex:1;display:flex;flex-direction:column;}
+.flip-inner{
+  position:relative;width:100%;
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);
+  flex:1;
+}
+.flip-wrapper.flipped .flip-inner{transform:rotateY(180deg);}
+.flip-front,.flip-back{
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:8px;overflow:hidden;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+.flip-front{
+  background:#fff;display:flex;flex-direction:column;
+  min-height:var(--card-min-h);
+}
+.flip-back{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  transform:rotateY(180deg);background:#1A1A2E;
+  display:flex;flex-direction:column;min-height:var(--card-min-h);
+}
+.flip-back-head{
+  background:#1A1A2E;padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.flip-back-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#FFD000;}
+.flip-back-close{
+  background:rgba(255,255,255,0.15);border:none;color:white;
+  border-radius:4px;padding:3px 10px;cursor:pointer;font-size:11px;font-weight:700;
+  font-family:'Open Sans',sans-serif;
+}
+.flip-back-close:hover{background:rgba(255,255,255,0.3);}
+.flip-photos{display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;}
+.flip-photo-slot{display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.flip-photo-slot:first-child{border-right:1px solid rgba(255,255,255,0.1);}
+.flip-photo-label{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:rgba(255,255,255,0.6);padding:6px 10px 4px;background:#1A1A2E;flex-shrink:0;
+}
+.flip-photo-img{
+  flex:1;min-height:160px;position:relative;background:#111;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.flip-photo-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.flip-photo-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;color:rgba(255,255,255,0.3);font-size:12px;font-weight:600;
+  font-family:'Open Sans',sans-serif;text-align:center;padding:16px;cursor:pointer;
+  width:100%;height:100%;border:2px dashed rgba(255,255,255,0.15);transition:all .15s;
+}
+.flip-photo-empty:hover{border-color:rgba(255,255,255,0.4);color:rgba(255,255,255,0.6);}
+.flip-photo-empty svg{width:28px;height:28px;opacity:.5;}
+.flip-photo-change{
+  position:absolute;bottom:6px;right:6px;
+  background:rgba(0,0,0,0.6);border:none;color:white;border-radius:4px;
+  padding:3px 8px;cursor:pointer;font-size:10px;font-weight:700;
+  font-family:'Open Sans',sans-serif;opacity:0;transition:opacity .15s;
+}
+.flip-photo-img:hover .flip-photo-change{opacity:1;}
+.flip-indicator{
+  position:absolute;bottom:6px;left:8px;
+  background:rgba(0,0,0,0.35);border:none;color:white;border-radius:4px;
+  padding:2px 7px;font-size:10px;font-weight:700;cursor:pointer;
+  font-family:'Open Sans',sans-serif;display:flex;align-items:center;gap:4px;
+  transition:background .12s;z-index:3;
+}
+.flip-indicator:hover{background:rgba(0,0,0,0.6);}
+.flip-indicator.has-photos{background:rgba(232,41,11,0.75);}
+
+/* ════════════════════════════════════════════════════════
+   CARD HEAD
+════════════════════════════════════════════════════════ */
+.card-head{
+  padding:32px 12px 10px;position:relative;overflow:hidden;
+  border-radius:8px 8px 0 0;flex-shrink:0;
+}
+.card-head-actions{position:absolute;top:5px;right:6px;display:flex;gap:4px;z-index:2;}
+.card-head-actions button{
+  background:rgba(255,255,255,0.22);border:none;color:white;
+  border-radius:4px;padding:3px 8px;cursor:pointer;font-size:10px;font-weight:700;
+  font-family:'Open Sans',sans-serif;white-space:nowrap;transition:background .12s;
+}
+.card-head-actions button:hover{background:rgba(255,255,255,0.4);}
+.card-head-actions button.typo-active{background:#E8290B;}
+.card-drag-handle{
+  position:absolute;top:7px;left:8px;
+  color:rgba(255,255,255,0.45);font-size:16px;cursor:grab;line-height:1;user-select:none;
+}
+.card-drag-handle:hover{color:rgba(255,255,255,0.9);}
+
+/* ════════════════════════════════════════════════════════
+   CELDAS EDITABLES
+════════════════════════════════════════════════════════ */
+.editable{cursor:pointer;border-radius:3px;transition:background .12s;position:relative;}
+.edit-mode .editable:hover{background:rgba(232,41,11,0.12);outline:1.5px dashed rgba(232,41,11,0.6);}
+.edit-mode .editable.selected{background:rgba(232,41,11,0.18);outline:2px solid #E8290B;}
+
+/* ════════════════════════════════════════════════════════
+   PESOS
+════════════════════════════════════════════════════════ */
+.pesos{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  background:#F5F2EB;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.peso-cell{padding:5px 8px;border-right:1px solid var(--border);text-align:center;}
+.peso-cell:last-child{border-right:none;}
+.peso-label{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;}
+
+/* ════════════════════════════════════════════════════════
+   TABLA INGREDIENTES
+════════════════════════════════════════════════════════ */
+.table-header{
+  display:grid;grid-template-columns:18px 1fr 68px 68px;
+  padding:4px 10px;font-size:9px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:white;background:var(--ind-med-bg);flex-shrink:0;
+}
+.table-header span:nth-child(3),.table-header span:nth-child(4){text-align:center;}
+.ing-list{flex:1;}
+.ing-row{
+  display:grid;grid-template-columns:18px 1fr 68px 68px;
+  padding:4px 10px;border-bottom:1px solid #EEEAE0;align-items:center;
+}
+.ing-row:last-child{border-bottom:none;}
+.ing-idx{font-size:10px;color:var(--muted);font-weight:600;}
+
+/* ════════════════════════════════════════════════════════
+   CARD FOOTER
+════════════════════════════════════════════════════════ */
+.card-footer{
+  display:flex;justify-content:flex-end;padding:6px 10px;
+  background:#FAF8F3;border-top:1px solid var(--border);flex-shrink:0;
+  border-radius:0 0 8px 8px;
+}
+.del-btn{
+  background:none;border:1px solid #DDD;border-radius:4px;
+  color:var(--muted);font-size:11px;padding:3px 9px;cursor:pointer;
+  font-family:'Open Sans',sans-serif;font-weight:600;transition:all .12s;
+}
+.del-btn:hover{background:#C0392B;color:white;border-color:#C0392B;}
+
+/* ════════════════════════════════════════════════════════
+   CARD AÑADIR (solo admin)
+════════════════════════════════════════════════════════ */
+.card-add{
+  border:2px dashed var(--border);border-radius:8px;background:transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;min-height:var(--card-min-h);cursor:pointer;color:var(--muted);
+  transition:all .15s;font-family:'Open Sans',sans-serif;font-weight:700;font-size:14px;
+}
+.card-add:hover{border-color:#E8290B;color:#E8290B;background:rgba(232,41,11,0.03);}
+.card-add svg{width:32px;height:32px;}
+
+/* ════════════════════════════════════════════════════════
+   POPOVER TIPOGRAFÍA
+════════════════════════════════════════════════════════ */
+.cell-popover{
+  position:fixed;z-index:500;background:white;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2),0 2px 8px rgba(0,0,0,0.12);
+  border:1.5px solid var(--border);padding:0;min-width:320px;
+  display:none;animation:popIn .15s ease;
+}
+.cell-popover.visible{display:block;}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(-4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.pop-head{
+  background:#1A1A2E;color:white;padding:8px 12px;border-radius:8px 8px 0 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pop-head-title{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#FFD000;}
+.pop-close{background:none;border:none;color:white;font-size:16px;cursor:pointer;opacity:.7;line-height:1;}
+.pop-close:hover{opacity:1;}
+.pop-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px;}
+.pop-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.pop-group{display:flex;flex-direction:column;gap:3px;}
+.pop-group label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.pop-group select,.pop-group input[type="number"]{
+  border:1.5px solid var(--border);border-radius:5px;
+  padding:4px 7px;font-size:12px;font-family:'Open Sans',sans-serif;outline:none;background:#FAFAF7;
+}
+.pop-group select:focus,.pop-group input[type="number"]:focus{border-color:#E8290B;}
+.pop-group input[type="number"]{width:58px;}
+.pop-toggles{display:flex;gap:4px;}
+.pop-toggle{
+  width:28px;height:26px;border:1.5px solid var(--border);background:white;
+  border-radius:4px;cursor:pointer;font-size:13px;display:flex;align-items:center;
+  justify-content:center;transition:all .12s;
+}
+.pop-toggle.on{background:#1A1A2E;color:white;border-color:#1A1A2E;}
+.pop-color{width:34px;height:26px;border:1.5px solid var(--border);border-radius:5px;padding:2px;cursor:pointer;background:white;}
+.pop-preview{
+  padding:6px 10px;background:#F5F2EB;border-radius:5px;
+  font-size:12px;min-height:28px;display:flex;align-items:center;border:1px solid var(--border);
+}
+.pop-footer{padding:6px 12px 10px;display:flex;gap:6px;justify-content:flex-end;}
+.pop-apply{
+  background:#E8290B;color:white;border:none;border-radius:5px;
+  padding:5px 16px;font-family:'Open Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;
+}
+.pop-apply:hover{background:#FF4422;}
+.pop-reset{
+  background:transparent;color:var(--muted);border:1.5px solid var(--border);
+  border-radius:5px;padding:5px 10px;font-family:'Open Sans',sans-serif;font-size:12px;cursor:pointer;
+}
+.pop-reset:hover{border-color:var(--text);color:var(--text);}
+
+/* ════════════════════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:white;border-radius:12px;width:100%;max-width:680px;
+  max-height:93vh;overflow-y:auto;transform:translateY(16px);transition:transform .2s;
+}
+.overlay.open .modal{transform:translateY(0);}
+.modal-head{
+  background:#1A1A2E;color:white;padding:16px 20px;border-radius:12px 12px 0 0;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;
+}
+.modal-head h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#FFD000;}
+.modal-x{background:none;border:none;color:white;font-size:20px;cursor:pointer;opacity:.7;}
+.modal-x:hover{opacity:1;}
+.modal-body{padding:20px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.fg input,.fg select{
+  border:1.5px solid var(--border);border-radius:6px;
+  padding:7px 10px;font-size:13px;font-family:'Open Sans',sans-serif;
+  outline:none;background:#FAFAF7;width:100%;
+}
+.fg input:focus,.fg select:focus{border-color:#E8290B;}
+.color-panel{background:#F5F2EB;border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.use-two-colors{display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;}
+.use-two-colors input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#E8290B;}
+.use-two-colors span{font-size:12px;font-weight:600;color:var(--text);}
+.color-slots{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;}
+.color-slot{display:flex;flex-direction:column;gap:6px;}
+.color-slot label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.color-slot.hidden{display:none;}
+.preset-swatches{display:flex;gap:5px;flex-wrap:wrap;max-width:260px;}
+.swatch{width:26px;height:26px;border-radius:5px;border:2px solid transparent;cursor:pointer;transition:transform .1s;flex-shrink:0;}
+.swatch:hover{transform:scale(1.15);}
+.swatch.selected{border-color:#1A1A2E;box-shadow:0 0 0 2px white inset;}
+.custom-row{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.custom-row label{font-size:10px;color:var(--muted);font-weight:600;white-space:nowrap;}
+.custom-row input[type="color"]{width:36px;height:28px;border:1.5px solid var(--border);border-radius:5px;padding:2px;cursor:pointer;}
+.custom-hex{
+  border:1.5px solid var(--border);border-radius:5px;padding:4px 8px;
+  font-size:12px;font-family:'Roboto Mono',monospace;width:82px;outline:none;
+  background:white;text-transform:uppercase;
+}
+.custom-hex:focus{border-color:#E8290B;}
+.color-preview-bar{
+  margin-top:12px;height:36px;border-radius:6px;border:1px solid rgba(0,0,0,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;
+  color:white;text-shadow:0 1px 3px rgba(0,0,0,0.4);
+}
+.sec-title{
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;
+  border-bottom:2px solid var(--border);padding-bottom:4px;margin:16px 0 10px;
+}
+.ing-list-edit{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.ing-edit-head{display:grid;grid-template-columns:24px 1fr 85px 85px 28px;gap:6px;margin-bottom:4px;}
+.ing-edit-head span{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);text-align:center;}
+.ing-edit-head span:nth-child(2){text-align:left;}
+.ing-edit-row{
+  display:grid;grid-template-columns:24px 1fr 85px 85px 28px;gap:6px;align-items:center;
+  background:white;border:1.5px solid var(--border);border-radius:6px;padding:4px 6px;
+  cursor:grab;transition:box-shadow .12s,opacity .12s;user-select:none;
+}
+.ing-edit-row.dragging{opacity:.4;cursor:grabbing;}
+.ing-edit-row.drag-over{border-color:#E8290B;box-shadow:0 0 0 2px rgba(232,41,11,0.2);}
+.drag-handle{color:#BBB;font-size:15px;cursor:grab;text-align:center;line-height:1;}
+.ing-edit-row input{
+  border:1.5px solid var(--border);border-radius:5px;padding:5px 7px;
+  font-size:12px;font-family:'Open Sans',sans-serif;outline:none;background:#FAFAF7;width:100%;
+}
+.ing-edit-row input:focus{border-color:#E8290B;background:white;}
+.rm-btn{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;text-align:center;}
+.rm-btn:hover{color:#C0392B;}
+.add-ing{
+  width:100%;border:1.5px dashed var(--border);border-radius:6px;padding:6px;background:#F5F2EB;
+  cursor:pointer;font-size:12px;color:var(--muted);font-family:'Open Sans',sans-serif;font-weight:700;transition:all .12s;
+}
+.add-ing:hover{border-color:#E8290B;color:#E8290B;}
+.modal-foot{
+  padding:14px 20px;border-top:1.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end;
+  background:#F5F2EB;border-radius:0 0 12px 12px;position:sticky;bottom:0;
+}
+.btn-save{
+  background:#E8290B;color:white;border:none;border-radius:6px;padding:9px 22px;
+  font-family:'Open Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;
+}
+.btn-save:hover{background:#FF4422;}
+.btn-cancel2{
+  background:transparent;color:var(--muted);border:1.5px solid var(--border);
+  border-radius:6px;padding:9px 16px;font-family:'Open Sans',sans-serif;font-size:13px;cursor:pointer;
+}
+
+/* ════════════════════════════════════════════════════════
+   FILTRO — dot de color + indicador de edición
+════════════════════════════════════════════════════════ */
+.salsa-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:5px;vertical-align:middle;flex-shrink:0;
+  border:1px solid rgba(0,0,0,0.15);
+}
+.filter-btn:not(.todas-btn):hover::after{
+  content:'✎';font-size:9px;margin-left:4px;opacity:.55;
+}
+
+/* ════════════════════════════════════════════════════════
+   POPOVER — Editor de color de salsa
+════════════════════════════════════════════════════════ */
+.salsa-color-pop2{
+  position:fixed;z-index:600;background:white;border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.12);
+  border:1.5px solid var(--border);padding:0;min-width:230px;
+  display:none;animation:popIn .15s ease;
+}
+.salsa-color-pop2.visible{display:block;}
+.scp2-head{
+  background:#1A1A2E;color:white;padding:7px 12px;border-radius:8px 8px 0 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.scp2-title{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#FFD000;}
+.scp2-close{background:none;border:none;color:white;font-size:15px;cursor:pointer;opacity:.7;line-height:1;}
+.scp2-close:hover{opacity:1;}
+.scp2-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+.scp2-row{display:flex;align-items:center;gap:10px;}
+.scp2-row label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;}
+.scp2-picker{width:40px;height:30px;border:1.5px solid var(--border);border-radius:5px;padding:2px;cursor:pointer;}
+.scp2-hex{
+  border:1.5px solid var(--border);border-radius:5px;padding:4px 8px;
+  font-size:12px;font-family:'Roboto Mono',monospace;width:86px;outline:none;
+  background:white;text-transform:uppercase;
+}
+.scp2-hex:focus{border-color:#E8290B;}
+.scp2-preview{
+  height:32px;border-radius:6px;border:1px solid rgba(0,0,0,0.1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;
+  color:white;text-shadow:0 1px 3px rgba(0,0,0,0.4);transition:background .1s;
+}
+.scp2-footer{padding:6px 14px 12px;display:flex;gap:6px;justify-content:flex-end;}
+.scp2-apply{
+  background:#E8290B;color:white;border:none;border-radius:5px;
+  padding:5px 16px;font-family:'Open Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;
+}
+.scp2-apply:hover{background:#FF4422;}
+.scp2-reset{
+  background:transparent;color:var(--muted);border:1.5px solid var(--border);
+  border-radius:5px;padding:5px 10px;font-family:'Open Sans',sans-serif;font-size:12px;cursor:pointer;
+}
+.scp2-reset:hover{border-color:var(--text);color:var(--text);}
+
+/* ── Indicador de sincronización (añadido para Netlify) ── */
+#syncStatus{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.65);
+  padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  transition:color .25s,border-color .25s;letter-spacing:.3px;
+}
+#syncStatus[data-s="ok"]      {color:#6fffaa;border-color:rgba(111,255,170,.35);}
+#syncStatus[data-s="syncing"] {color:#ffe566;border-color:rgba(255,229,102,.35);}
+#syncStatus[data-s="offline"] {color:#ff8080;border-color:rgba(255,128,128,.35);}
+#syncStatus[data-s="local"]   {color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.1);}
+#syncStatus[data-s="error"]   {color:#ffb347;border-color:rgba(255,179,71,.35);}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET
+════════════════════════════════════════════════════════ */
+@media (max-width:900px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding:12px 16px 32px;}
+}
+
+/* ── Indicador de sincronización (añadido para Netlify) ── */
+#syncStatus{
+  font-size:10px;font-weight:700;color:rgba(255,255,255,.65);
+  padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  transition:color .25s,border-color .25s;letter-spacing:.3px;
+}
+#syncStatus[data-s="ok"]      {color:#6fffaa;border-color:rgba(111,255,170,.35);}
+#syncStatus[data-s="syncing"] {color:#ffe566;border-color:rgba(255,229,102,.35);}
+#syncStatus[data-s="offline"] {color:#ff8080;border-color:rgba(255,128,128,.35);}
+#syncStatus[data-s="local"]   {color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.1);}
+#syncStatus[data-s="error"]   {color:#ffb347;border-color:rgba(255,179,71,.35);}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — MÓVIL
+════════════════════════════════════════════════════════ */
+@media (max-width:600px){
+  .app-header{padding:0 12px;height:52px;gap:8px;}
+  .logo{font-size:20px;letter-spacing:2px;}
+  .btn{padding:5px 10px;font-size:11px;}
+  .logo-badge{font-size:8px;}
+  .toolbar{padding:10px 12px 0;gap:7px;}
+  .search-input{width:100%;flex-basis:100%;}
+  .filter-group{flex-basis:100%;}
+  .filter-btn{font-size:10px;padding:4px 9px;}
+  .sort-select{flex-basis:100%;}
+  .count{margin-left:0;}
+  .admin-banner,.edit-banner{padding:7px 12px;font-size:11px;}
+  .exit-admin-btn,.exit-edit-btn{padding:3px 9px;font-size:11px;}
+  .grid{grid-template-columns:1fr !important;gap:10px;padding:10px 12px 28px;}
+  :root{--card-min-h:360px;}
+  .card-head{padding:26px 10px 8px;}
+  .card-head-actions button{font-size:9px;padding:2px 6px;}
+  .peso-label{font-size:7px;}
+  .peso-cell{padding:4px 5px;}
+  .table-header{grid-template-columns:16px 1fr 54px 54px;padding:3px 8px;font-size:8px;}
+  .ing-row{grid-template-columns:16px 1fr 54px 54px;padding:3px 8px;}
+  .ing-idx{font-size:9px;}
+  .overlay{padding:0;align-items:flex-end;}
+  .modal{border-radius:16px 16px 0 0;max-height:95dvh;}
+  .modal-head{border-radius:16px 16px 0 0;}
+  .modal-body{padding:14px;}
+  .frow{grid-template-columns:1fr;}
+  .frow3{grid-template-columns:1fr 1fr 1fr;}
+  .fg.full{grid-column:1;}
+  .cell-popover{left:8px !important;right:8px !important;width:auto !important;min-width:0 !important;}
+  .pop-row{flex-wrap:wrap;gap:6px;}
+  .card-add{min-height:120px;}
+}
+@media (max-width:380px){
+  .frow3{grid-template-columns:1fr;}
+  .btn{padding:4px 8px;font-size:10px;}
+  .logo{font-size:18px;}
+}
+
+/* ════════════════════════════════════════════════════════
+   IMPRESIÓN A3 — 2 columnas × 3 filas por página
+   A3 portrait: 297mm × 420mm
+   Margen: 8mm por lado
+   Área útil: 281mm × 404mm
+   Gap entre fichas: 5mm
+   Ancho ficha:  (281 - 5) / 2  = 138mm
+   Alto ficha:   (404 - 10) / 3 = 131.3mm
+════════════════════════════════════════════════════════ */
+@media print {
+
+  /* ── Tamaño y márgenes de página ── */
+  @page {
+    size: A3 portrait;
+    margin: 8mm;
+  }
+
+  /* ── Forzar impresión de colores y fondos ── */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* ── Ocultar toda la interfaz ── */
+  .app-header,
+  .toolbar,
+  .admin-banner,
+  .edit-banner,
+  .card-head-actions,
+  .card-footer,
+  .card-add,
+  .overlay,
+  .card-drag-handle,
+  .cell-popover,
+  .toast,
+  .flip-back,
+  .flip-indicator { display: none !important; }
+
+  /* ── Reset body ── */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* ── Grid: 2 columnas, 3 filas, filling the page ── */
+  .grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    /* 3 filas explícitas de igual altura para llenar la página */
+    grid-template-rows: repeat(3, calc((420mm - 16mm - 10mm) / 3)) !important;
+    gap: 5mm !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    /* Cada página = exactamente una hoja A3 */
+    height: calc(420mm - 16mm) !important;
+    overflow: hidden !important;
+    /* Separar grupos de 6 en páginas distintas */
+    page-break-after: always !important;
+  }
+
+  /* ── Cada ficha ocupa su celda exacta ── */
+  .card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    border: 1.5px solid #C8C4BC !important;
+    border-radius: 4px !important;
+    transform: none !important;
+    overflow: hidden !important;
+    /* Sin min-height fijo: la cuadrícula ya define la altura */
+    min-height: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* ── Flip: solo muestra la cara frontal ── */
+  .flip-wrapper {
+    min-height: 0 !important;
+    height: 100% !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    perspective: none !important;
+  }
+  .flip-inner {
+    transform: none !important;
+    position: relative !important;
+    height: 100% !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .flip-front {
+    position: relative !important;
+    box-shadow: none !important;
+    border: none !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .flip-back { display: none !important; }
+
+  /* ── Cabecera de la ficha ── */
+  .card-head {
+    border-radius: 0 !important;
+    padding: 6px 10px 5px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ── Pesos ── */
+  .pesos {
+    flex-shrink: 0 !important;
+  }
+  .peso-label { font-size: 7px !important; }
+  .peso-cell  { padding: 3px 6px !important; }
+
+  /* ── Tabla de ingredientes — crece para rellenar espacio sobrante ── */
+  .table-header {
+    font-size: 7.5px !important;
+    padding: 3px 8px !important;
+    flex-shrink: 0 !important;
+  }
+  .ing-list {
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+  .ing-row     { padding: 3px 8px !important; }
+  .ing-idx     { font-size: 8px !important; }
+
+  /* ── Eliminar resaltados de edición ── */
+  .editable {
+    outline: none !important;
+    background: transparent !important;
+    cursor: default !important;
+  }
+
+  /* ── Paginación automática cada 6 fichas ──
+     Las fichas 7-12 irán a la página 2, 13-18 a la 3, etc.
+     No usamos display:none, dejamos que el grid
+     y la paginación del navegador lo gestionen.
+     Cada bloque de 6 = una página gracias a grid-template-rows
+     + height fijo en .grid y page-break-after:always en .grid.
+     Para múltiples páginas, el JS de impresión divide el grid. ──
+  */
+
+  /* ── Ocultar grid original durante impresión ──
+     (el JS lo oculta directamente con style, este es el fallback) ── */
+  #grid { display: none !important; }
+
+  /* ── Páginas generadas por JS ── */
+  #print-pages {
+    display: block !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Cada .print-page = exactamente una hoja A3 */
+  .print-page {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(3, 1fr) !important;
+    gap: 5mm !important;
+    width: 100% !important;
+    /* Alto = A3 (420mm) - márgenes top+bottom (8mm+8mm) */
+    height: calc(420mm - 16mm) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    overflow: hidden !important;
+  }
+  /* Última página: no fuerza salto final */
+  .print-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER — logo clickable para activar/desactivar admin -->
+<div class="app-header" id="appHeader">
+  <div class="logo" id="logoBtn" onclick="toggleAdmin()" title="Pulsa 3 veces para modo admin">
+    TopePizza<span class="logo-badge">ADMIN</span>
+  </div>
+  <div class="header-btns">
+    <span id="syncStatus" data-s="syncing" title="Estado de sincronización entre dispositivos">🔄 Cargando…</span>
+    <button class="btn btn-add admin-only" onclick="openModal()">+ Nueva pizza</button>
+    <button class="btn btn-print" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</div>
+
+<!-- Banner admin -->
+<div class="admin-banner" id="adminBanner">
+  🔧 <strong>Modo Admin activo</strong>
+  <span class="admin-banner-text">— Puedes añadir, editar y eliminar pizzas</span>
+  <button class="exit-admin-btn" onclick="toggleAdmin()">✕ Salir del admin</button>
+</div>
+
+<!-- Banner tipografía -->
+<div class="edit-banner" id="editBanner">
+  ✏️ <strong id="editBannerName"></strong>
+  <span>— Clic en cualquier celda para cambiar su tipografía</span>
+  <button class="exit-edit-btn" onclick="exitEditMode()">✕ Salir del modo tipografía</button>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar" id="toolbar">
+  <input class="search-input" type="text" placeholder="🔍 Buscar pizza..." oninput="doSearch(this.value)">
+  <div class="filter-group" id="filterGroup"></div>
+  <select class="sort-select" onchange="setSort(this.value)">
+    <option value="manual">⠿ Orden manual</option>
+    <option value="az">A → Z</option>
+    <option value="za">Z → A</option>
+    <option value="color">Por color</option>
+    <option value="peso_asc">Peso ↑</option>
+    <option value="peso_desc">Peso ↓</option>
+  </select>
+  <div class="count" id="cnt">0 pizzas</div>
+</div>
+
+<div class="grid" id="grid"></div>
+<!-- ════════════════════════════════════════════════════════
+     POPOVER — Editor de color de salsa (doble click en filtro)
+════════════════════════════════════════════════════════ -->
+<div class="salsa-color-pop2" id="salsaColorPop2">
+  <div class="scp2-head">
+    <span class="scp2-title" id="scpTitle2">Color de salsa</span>
+    <button class="scp2-close" onclick="closeSalsaColorPop()">✕</button>
+  </div>
+  <div class="scp2-body">
+    <div class="scp2-row">
+      <label>Color</label>
+      <input type="color" class="scp2-picker" id="scpPicker2" oninput="onScp2Picker()">
+      <input type="text" class="scp2-hex" id="scpHex2" maxlength="7" oninput="onScp2Hex()">
+    </div>
+    <div class="scp2-preview" id="scpPreview2">Vista previa</div>
+  </div>
+  <div class="scp2-footer">
+    <button class="scp2-reset" onclick="resetSalsaColor2()">↺ Restablecer</button>
+    <button class="scp2-apply" onclick="applySalsaColor2()">✓ Aplicar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Guardado automáticamente</div>
+
+<!-- POPOVER TIPOGRAFÍA -->
+<div class="cell-popover" id="cellPopover">
+  <div class="pop-head">
+    <span class="pop-head-title" id="popTitle">Celda</span>
+    <button class="pop-close" onclick="closePopover()">✕</button>
+  </div>
+  <div class="pop-body">
+    <div class="pop-row">
+      <div class="pop-group"><label>Fuente</label>
+        <select id="popFont" onchange="livePreview()">
+          <option value="'Open Sans', sans-serif">Open Sans</option>
+          <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+          <option value="'Montserrat', sans-serif">Montserrat</option>
+          <option value="'Playfair Display', serif">Playfair Display</option>
+          <option value="'Lato', sans-serif">Lato</option>
+          <option value="'Roboto Mono', monospace">Roboto Mono</option>
+        </select>
+      </div>
+      <div class="pop-group"><label>Tamaño</label>
+        <input type="number" id="popSize" min="6" max="72" value="12" oninput="livePreview()">
+      </div>
+      <div class="pop-group"><label>Color</label>
+        <input type="color" class="pop-color" id="popColor" value="#1A1A1A" oninput="livePreview()">
+      </div>
+      <div class="pop-group"><label>Estilo</label>
+        <div class="pop-toggles">
+          <button class="pop-toggle" id="popBold"   onclick="togglePop('popBold')"  ><b>B</b></button>
+          <button class="pop-toggle" id="popItalic" onclick="togglePop('popItalic')"><i>I</i></button>
+        </div>
+      </div>
+    </div>
+    <div class="pop-preview" id="popPreview">Vista previa</div>
+  </div>
+  <div class="pop-footer">
+    <button class="pop-reset" onclick="resetCell()">↺ Resetear</button>
+    <button class="pop-apply" onclick="applyCell()">✓ Aplicar</button>
+  </div>
+</div>
+
+<!-- MODAL nueva/editar pizza -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="mTitle">Nueva Pizza</h2><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="fg full"><label>Nombre</label><input type="text" id="fNombre" placeholder="ej. LA SUPREMA" oninput="refreshColorPrev()"></div></div>
+      <div class="sec-title">Color de cabecera</div>
+      <div class="color-panel">
+        <label class="use-two-colors"><input type="checkbox" id="chkDos" onchange="toggleDosColores()"><span>Usar dos colores (degradado)</span></label>
+        <div class="color-slots">
+          <div class="color-slot" id="slot1"><label id="label1">Color principal</label>
+            <div class="preset-swatches" id="swatches1"></div>
+            <div class="custom-row"><label>Hex:</label>
+              <input type="color" id="cpick1" value="#4A7C3F" oninput="onPickerChange(1)">
+              <input type="text" class="custom-hex" id="chex1" value="#4A7C3F" oninput="onHexChange(1)" maxlength="7">
+            </div>
+          </div>
+          <div class="color-slot hidden" id="slot2"><label id="label2">2.º color</label>
+            <div class="preset-swatches" id="swatches2"></div>
+            <div class="custom-row"><label>Hex:</label>
+              <input type="color" id="cpick2" value="#6B4F9E" oninput="onPickerChange(2)">
+              <input type="text" class="custom-hex" id="chex2" value="#6B4F9E" oninput="onHexChange(2)" maxlength="7">
+            </div>
+          </div>
+        </div>
+        <div class="color-preview-bar" id="colorPreviewBar">Vista previa</div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>⚠️ Aviso</label><input type="text" id="fAviso" placeholder="SIN QUESO..."></div>
+        <div class="fg"><label>🌿 Nota</label><input type="text" id="fNota" placeholder="ORÉGANO..."></div>
+      </div>
+      <div class="frow3">
+        <div class="fg"><label>Individual (g)</label><input type="number" id="fInicio"></div>
+        <div class="fg"><label>Fina (g)</label><input type="number" id="fFinal"></div>
+        <div class="fg"><label>Esponjosa (g)</label><input type="number" id="fEmbalado"></div>
+      </div>
+      <div class="sec-title">Ingredientes <span style="font-size:11px;font-weight:400;color:var(--muted);font-family:'Open Sans',sans-serif;letter-spacing:0">— arrastra para reordenar</span></div>
+      <div class="ing-edit-head"><span></span><span>Ingrediente</span><span>IND</span><span>MED</span><span></span></div>
+      <div class="ing-list-edit" id="ingList"></div>
+      <button class="add-ing" onclick="addIngRow()">+ Añadir ingrediente</button>
+    </div>
+    <div class="modal-foot"><button class="btn-cancel2" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="savePizza()">💾 Guardar</button></div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   PRESETS DE COLOR
+════════════════════════════════════════════════════════ */
+const PRESETS=[
+  {c:'#4A7C3F',l:'Verde BBQ'},{c:'#6B4F9E',l:'Morado Barbacoa'},
+  {c:'#7A4E2D',l:'Marrón Burger'},{c:'#C0392B',l:'Rojo Tomate'},
+  {c:'#4A6FA5',l:'Azul Bechamel'},{c:'#C07A1A',l:'Naranja Ajo'},
+  {c:'#3D6B5E',l:'Verde Trufa'},{c:'#2C3E50',l:'Gris Especial'},
+  {c:'#E74C3C',l:'Rojo vivo'},{c:'#E67E22',l:'Naranja'},
+  {c:'#F39C12',l:'Amarillo'},{c:'#27AE60',l:'Esmeralda'},
+  {c:'#16A085',l:'Turquesa'},{c:'#2980B9',l:'Azul'},
+  {c:'#8E44AD',l:'Violeta'},{c:'#D35400',l:'Naranja quemado'},
+  {c:'#7F8C8D',l:'Gris'},{c:'#1A1A1A',l:'Negro'},
+  {c:'#BDC3C7',l:'Gris claro'},{c:'#F8C471',l:'Melocotón'},
+];
+
+/* ════════════════════════════════════════════════════════
+   MODO ADMIN
+   Acceso: triple clic en el logo TopePizza
+   Estado guardado en localStorage
+════════════════════════════════════════════════════════ */
+/* ── Helper: estado de sincronización (debe definirse antes de loadSaved) ── */
+function setSyncStatus(status){
+  const el=document.getElementById('syncStatus');
+  if(!el)return;
+  const MAP={
+    ok:      ['☁️ Sincronizado',   'ok'],
+    syncing: ['🔄 Sincronizando…', 'syncing'],
+    offline: ['📵 Sin conexión',   'offline'],
+    local:   ['💾 Solo local',     'local'],
+    error:   ['⚠️ Error al guardar','error'],
+  };
+  const [text,ds]=MAP[status]||MAP.local;
+  el.textContent=text;
+  el.dataset.s=ds;
+}
+
+const ADMIN_KEY='topepizza_admin_v1';
+let isAdmin=false;
+let logoClickCount=0,logoClickTimer=null;
+
+// Triple clic para activar, clic simple para desactivar si ya está activo
+function handleLogoClick(){
+  if(isAdmin){toggleAdmin();return;}
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  logoClickTimer=setTimeout(()=>{logoClickCount=0;},600);
+  if(logoClickCount>=3){logoClickCount=0;toggleAdmin();}
+}
+
+function toggleAdmin(){
+  isAdmin=!isAdmin;
+  try{localStorage.setItem(ADMIN_KEY,isAdmin?'1':'0');}catch(e){}
+  applyAdminMode();
+  if(!isAdmin) exitEditMode();
+}
+
+function applyAdminMode(){
+  const header=document.getElementById('appHeader');
+  const banner=document.getElementById('adminBanner');
+  if(isAdmin){header.classList.add('admin-active');banner.classList.add('visible');}
+  else{header.classList.remove('admin-active');banner.classList.remove('visible');}
+  renderAll();
+}
+
+function initAdminState(){
+  try{const s=localStorage.getItem(ADMIN_KEY);isAdmin=(s==='1');}catch(e){isAdmin=false;}
+  // Cambiamos el onclick del logo al manejador de triple clic
+  document.getElementById('logoBtn').onclick=handleLogoClick;
+}
+
+/* ════════════════════════════════════════════════════════
+   STORAGE
+════════════════════════════════════════════════════════ */
+const STORAGE_KEY='topepizza_data_v2';
+let saveTimer=null;
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async ()=>{
+    const json=JSON.stringify(pizzas);
+    // 1) Siempre guardar en localStorage como respaldo offline
+    try{localStorage.setItem(STORAGE_KEY,json);}catch(e){}
+    // 2) Guardar también los colores de salsas
+    try{
+      const colObj={};salsaColors.forEach((v,k)=>colObj[k]=v);
+      localStorage.setItem(SALSA_COLORS_KEY,JSON.stringify(colObj));
+    }catch(e){}
+    // 3) Enviar al servidor (Netlify Blobs) → compartido entre dispositivos
+    try{
+      const salsaObj={};salsaColors.forEach((v,k)=>salsaObj[k]=v);
+      const res=await fetch('/api/saveData',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({pizzas,salsaColors:salsaObj})
+      });
+      if(res.ok){
+        showToast('✓ Guardado y sincronizado');
+        setSyncStatus('ok');
+      }else{
+        showToast('⚠️ Error en servidor (cód. '+res.status+') — guardado solo local');
+        setSyncStatus('error');
+      }
+    }catch(e){
+      showToast('⚠️ Sin conexión — guardado solo en este dispositivo');
+      setSyncStatus('offline');
+    }
+  },800);
+}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+async function loadSaved(){
+  setSyncStatus('syncing');
+  let serverOk=false;
+  try{
+    const res=await fetch('/api/getData',{cache:'no-store'});
+    if(!res.ok){
+      // Servidor respondió con error HTTP → problema real
+      setSyncStatus('error');
+    }else{
+      const data=await res.json();
+      if(data.ok && data.pizzas && Array.isArray(data.pizzas) && data.pizzas.length>0){
+        // ── CASO NORMAL: datos del servidor ──
+        pizzas=data.pizzas;
+        nextId=Math.max(...pizzas.map(x=>x.id))+1;
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(pizzas));
+        if(data.salsaColors && typeof data.salsaColors==='object'){
+          salsaColors=new Map(Object.entries(data.salsaColors));
+          localStorage.setItem(SALSA_COLORS_KEY,JSON.stringify(data.salsaColors));
+        }
+        setSyncStatus('ok');
+        serverOk=true;
+        return;  // ← salir aquí, no tocar localStorage
+      }else{
+        // ── PRIMER USO: servidor accesible pero store vacío ──
+        // Usar datos de localStorage si los hay, y subirlos al servidor
+        setSyncStatus('local');
+      }
+    }
+  }catch(e){
+    // ── SIN RED: fetch lanzó excepción ──
+    setSyncStatus('offline');
+  }
+
+  // Fallback a localStorage (offline o primer uso)
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const p=JSON.parse(raw);
+      if(Array.isArray(p)&&p.length>0){
+        pizzas=p;
+        nextId=Math.max(...p.map(x=>x.id))+1;
+        // Si el servidor estaba accesible pero vacío, subir lo que hay en local
+        if(!serverOk){
+          const colObj={};salsaColors.forEach((v,k)=>colObj[k]=v);
+          fetch('/api/saveData',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({pizzas,salsaColors:colObj})
+          }).catch(()=>{});
+        }
+      }
+    }
+  }catch(e){}
+}
+
+/* ════════════════════════════════════════════════════════
+   ESTILOS DE CELDA
+════════════════════════════════════════════════════════ */
+function defCS(key){
+  if(key==='nombre') return {font:"'Bebas Neue',sans-serif",size:34,color:'#ffffff',bold:false,italic:false};
+  if(key==='aviso')  return {font:"'Open Sans',sans-serif",size:10,color:'#FFE080',bold:true,italic:false};
+  if(key==='nota')   return {font:"'Open Sans',sans-serif",size:10,color:'#B8FFB0',bold:false,italic:false};
+  if(key&&key.startsWith('peso')) return {font:"'Open Sans',sans-serif",size:13,color:key==='pesoEsp'?'#C0392B':'#1A1A1A',bold:true,italic:false};
+  if(key&&key.endsWith('_name'))  return {font:"'Open Sans',sans-serif",size:12,color:'#1A1A1A',bold:true,italic:false};
+  return {font:"'Open Sans',sans-serif",size:11,color:'#1A1A1A',bold:true,italic:false};
+}
+function csStyle(cs){
+  if(!cs)return'';
+  return `font-family:${cs.font};font-size:${cs.size}px;color:${cs.color};font-weight:${cs.bold?800:400};font-style:${cs.italic?'italic':'normal'};`;
+}
+function getCS(p,key){return p.celulas&&p.celulas[key]?p.celulas[key]:null;}
+
+/* ════════════════════════════════════════════════════════
+   DATOS DE PIZZAS
+════════════════════════════════════════════════════════ */
+function mkP(nombre,color1,color2,aviso,nota,inicio,final,embalado,cat,ings){
+  return {id:nextId++,nombre,color1,color2:color2||null,aviso:aviso||'',nota:nota||'',
+    inicio,final,embalado,cat,ingredientes:ings,celulas:{},fotoAntes:null,fotoDespues:null};
+}
+let nextId=1;
+let pizzas=[
+  mkP("DIVINA","#4A7C3F",null,"SIN QUESO · MUCHA BRAVA, POCA AJO","",459,665,795,"bbq",[{n:"SALSA BBQ ROJA",ind:"SIN Q",med:"SIN Q"},{n:"SALSA DE AJO",ind:"—",med:"—"},{n:"CRISPY",ind:"5 UDS",med:"12 UDS"},{n:"POLLO",ind:"½M",med:"MED"},{n:"CHAMPIÑÓN",ind:"4 UDS",med:"6 UDS"},{n:"PIM. VERDE",ind:"PIZCA",med:"PUÑADO"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"}]),
+  mkP("DELUXE","#6B4F9E",null,"","🍯 MIEL → SALIDA DEL HORNO",441,628,758,"barbacoa",[{n:"SALSA BARBACOA",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"CRISPY",ind:"5 UDS",med:"12 UDS"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"QUESO CABRA",ind:"1 TROZO",med:"2 TROZOS"}]),
+  mkP("TERRIBLONA","#6B4F9E",null,"","",492,725,855,"barbacoa",[{n:"SALSA BARBACOA",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"KEBAP",ind:"MINI",med:"MED"},{n:"TOMATE",ind:"2 UDS",med:"6 UDS"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"YOGURT",ind:"TOQUE",med:"TOQUE"}]),
+  mkP("PENDEJAA","#4A7C3F",null,"SIN QUESO · MUCHA BRAVA, POCA AJO","",469,680,810,"bbq",[{n:"SALSA BRAVA",ind:"BASE",med:"BASE"},{n:"SALSA DE AJO",ind:"POCA",med:"POCA"},{n:"CRISPY",ind:"5 UDS",med:"12 UDS"},{n:"KEBAP",ind:"MINI",med:"MED"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"PIM. VERDE",ind:"PIZCA",med:"PUÑADO"}]),
+  mkP("DOÑA BURGUER","#7A4E2D",null,"","",504,745,875,"burger",[{n:"SALSA BURGER",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"TOMATE",ind:"2 UDS",med:"6 UDS"},{n:"CRISPY",ind:"5 UDS",med:"12 UDS"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"MEZCLA QUESOS",ind:"½M",med:"MINI"}]),
+  mkP("MAMATRUFA","#3D6B5E",null,"","",448,640,770,"trufa",[{n:"SALSA ESPECIAL TRUFA",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"POLLO BRASEADO",ind:"MINI",med:"MED"},{n:"CHAMPIÑÓN",ind:"4 UDS",med:"8 UDS"},{n:"CEB. CARAMELIZADA",ind:"4",med:"8"}]),
+  mkP("LA PATRONA","#4A7C3F",null,"","",462,670,800,"bbq",[{n:"SALSA BRAVA",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"CRISPY",ind:"MINI",med:"MED"},{n:"COCHINITA PIBIL",ind:"MINI",med:"MED"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"SALSA BURGER",ind:"TOQUE",med:"TOQUE"}]),
+  mkP("AL GUSTO","#2C3E50",null,"","📋 EL CLIENTE ELIGE SALSA Y TOPPINGS",null,null,null,"especial",[{n:"SALSA (A ELEGIR)",ind:"LIBRE",med:"LIBRE"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"SELLOS",ind:"MÁX. 8",med:"MÁX. 16"},{n:"CUENCOS",ind:"MÁX. 1",med:"MÁX. 1"}]),
+  mkP("5 QUESOS","#C0392B",null,"","",393,525,655,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"MEZCLA QUESOS",ind:"MINI",med:"MED"},{n:"QUESO CABRA",ind:"1 TROZO",med:"2 TROZOS"}]),
+  mkP("BARBACOA","#6B4F9E",null,"","",464,670,800,"barbacoa",[{n:"SALSA BARBACOA",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"5 UDS",med:"12 UDS"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"POLLO",ind:"½M",med:"MINI"}]),
+  mkP("CABRITA","#C0392B",null,"","🍯 MIEL → SALIDA DEL HORNO",408,553,683,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"8 UDS",med:"16 UDS"},{n:"QUESO CABRA",ind:"1 TROZO",med:"2 TROZOS"}]),
+  mkP("CAMPESINA","#C0392B",null,"","",498,715,845,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"4 UDS",med:"10 UDS"},{n:"POLLO",ind:"½M",med:"MINI"},{n:"CHAMPIÑÓN",ind:"3 UDS",med:"6 UDS"},{n:"PIM. ROJO",ind:"PIZCA",med:"PUÑADO"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"ACEITUNA",ind:"PIZCA",med:"PUÑADO"}]),
+  mkP("CAPRICHOSA","#C0392B",null,"","",450,630,760,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"5 UDS",med:"10 UDS"},{n:"POLLO",ind:"½M",med:"MINI"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"TOQUE BBQ",ind:"13G",med:"13G"}]),
+  mkP("CARNÍVORA","#C0392B",null,"","",424,584,714,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"4 UDS",med:"8 UDS"},{n:"JAMÓN YORK",ind:"3 UDS",med:"8 UDS"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"PEPERONI",ind:"5 UDS",med:"10 UDS"}]),
+  mkP("DE LA HUERTA","#C0392B",null,"","",487,695,825,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"TOMATE",ind:"3 UDS",med:"8 UDS"},{n:"CHAMPIÑÓN",ind:"3 UDS",med:"8 UDS"},{n:"PIM. VERDE",ind:"PIZCA",med:"PUÑADO"},{n:"PIM. PIQUILLO",ind:"PIZCA",med:"PUÑADO"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"},{n:"ACEITUNA",ind:"PIZCA",med:"PUÑADO"}]),
+  mkP("DELICIOSA","#6B4F9E","#4A6FA5","DOS SALSAS: BARBACOA + BECHAMEL","",null,null,null,"especial",[{n:"SALSA BARBACOA",ind:"BASE",med:"BASE"},{n:"SALSA BECHAMEL",ind:"BASE",med:"BASE"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"5 UDS",med:"10 UDS"},{n:"TERNERA",ind:"PIZCA",med:"PUÑADO"},{n:"TOMATE",ind:"2 UDS",med:"6 UDS"},{n:"CEBOLLA",ind:"PIZCA",med:"PUÑADO"}]),
+  mkP("LA DONNA","#C0392B",null,"","🌿 ORÉGANO POR ENCIMA AL MONTAR",491,705,835,"tomate",[{n:"SALSA TOMATE",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"5 UDS",med:"10 UDS"},{n:"ATÚN",ind:"PIZCA",med:"PUÑADO"},{n:"TOMATE",ind:"3 UDS",med:"7 UDS"},{n:"ACEITUNA",ind:"PIZCA",med:"PUÑADO"},{n:"SALSA COCKTAIL",ind:"TOQUE",med:"TOQUE"}]),
+  mkP("PECHUGUITA","#4A6FA5",null,"","",431,610,740,"bechamel",[{n:"BECHAMEL",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"8 UDS",med:"16 UDS"},{n:"POLLO",ind:"½M",med:"MED"}]),
+  mkP("POLLO AL AJILLO","#C07A1A",null,"","",474,690,820,"ajo",[{n:"SALSA AJO",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"POLLO",ind:"MINI",med:"MED"},{n:"PIM. VERDE",ind:"PIZCA",med:"PUÑADO"},{n:"ACEITUNA",ind:"PIZCA",med:"PUÑADO"},{n:"MEZCLA QUESOS",ind:"½M",med:"MINI"}]),
+  mkP("MATILLA","#4A6FA5",null,"","🌿 ORÉGANO POR ENCIMA AL MONTAR",406,565,695,"bechamel",[{n:"BECHAMEL",ind:"—",med:"—"},{n:"MOZZARELLA",ind:"MINI",med:"MED"},{n:"BACON",ind:"5 UDS",med:"14 UDS"},{n:"CHAMPIÑÓN",ind:"3 UDS",med:"8 UDS"},{n:"QUESO CABRA",ind:"1 TROZO",med:"2 TROZOS"},{n:"CEB. CARAMELIZADA",ind:"4",med:"8"}]),
+  mkP("BOMBAJOS","#C07A1A",null,"SALSA AJO: NO MUCHA — CON MODERACIÓN","",null,null,null,"ajo",[{n:"SALSA AJO (NORMAL)",ind:"45G",med:"80G"},{n:"MOZZARELLA",ind:"60G",med:"120G"},{n:"ORÉGANO",ind:"×2",med:"×5"}]),
+];
+loadSaved();
+
+/* ════════════════════════════════════════════════════════
+   FILTROS DINÁMICOS DE SALSAS
+   Lee los ingredientes de cada pizza y genera los filtros
+   automáticamente, normalizando nombres similares.
+════════════════════════════════════════════════════════ */
+let filterSalsa='todas';
+
+/* ════════════════════════════════════════════════════════
+   SISTEMA DE SALSAS — fuente única de verdad
+   ─────────────────────────────────────────────────────
+   · SALSA_RULES   : tabla de salsas conocidas (regex + key + label + color default)
+   · SALSA_COLORS_KEY : clave localStorage para colores personalizados
+   · salsaColors   : Map vivo  key → color hex  (default + customizados)
+
+   Detección:
+   · Un ingrediente es salsa si su nombre (en mayúsculas) contiene "SALSA" o "BECHAMEL"
+   · Se compara contra SALSA_RULES para normalizar y obtener key/color
+   · Si no coincide con ninguna regla conocida, se crea una entrada dinámica
+
+   Equivalencias importantes:
+   · SALSA TOMATE / SALSA TOMATE FRITO / SALSA DE TOMATE → key 'tomate'
+   · SALSA BARBACOA / SALSA BBQ / SALSA BBQ ROJA → key 'barbacoa'
+════════════════════════════════════════════════════════ */
+
+// Tabla de salsas conocidas — regex ordenadas de más a menos específica
+const SALSA_RULES = [
+  { re: /bbq|brava/i,         key: 'bbq',      label: 'BBQ / Brava', colorDefault: '#4A7C3F' },
+  { re: /barbacoa/i,          key: 'barbacoa',  label: 'Barbacoa',    colorDefault: '#6B4F9E' },
+  { re: /tomate/i,            key: 'tomate',    label: 'Tomate',      colorDefault: '#C0392B' },
+  { re: /bechamel/i,          key: 'bechamel',  label: 'Bechamel',    colorDefault: '#4A6FA5' },
+  { re: /ajo/i,               key: 'ajo',       label: 'Ajo',         colorDefault: '#C07A1A' },
+  { re: /burger/i,            key: 'burger',    label: 'Burger',      colorDefault: '#7A4E2D' },
+  { re: /trufa/i,             key: 'trufa',     label: 'Trufa',       colorDefault: '#3D6B5E' },
+  { re: /cocktail|cóctel/i,  key: 'cocktail',  label: 'Cocktail',    colorDefault: '#E74C3C' },
+];
+
+// Clave localStorage y mapa vivo de colores personalizados
+const SALSA_COLORS_KEY = 'topepizza_salsa_colors_v1';
+let salsaColors = new Map(); // key → color hex
+
+function loadSalsaColors() {
+  salsaColors = new Map();
+  try {
+    const raw = localStorage.getItem(SALSA_COLORS_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      Object.entries(saved).forEach(([k, v]) => salsaColors.set(k, v));
+    }
+  } catch(e) {}
+  // Rellenar defaults para las salsas conocidas que no tengan personalización
+  SALSA_RULES.forEach(r => {
+    if (!salsaColors.has(r.key)) salsaColors.set(r.key, r.colorDefault);
+  });
+}
+
+function saveSalsaColors() {
+  try {
+    const obj = {};
+    salsaColors.forEach((v, k) => obj[k] = v);
+    localStorage.setItem(SALSA_COLORS_KEY, JSON.stringify(obj));
+  } catch(e) {}
+}
+
+/**
+ * Devuelve el color activo de una salsa (custom o default).
+ */
+function getSalsaColor(key) {
+  if (salsaColors.has(key)) return salsaColors.get(key);
+  const rule = SALSA_RULES.find(r => r.key === key);
+  return rule ? rule.colorDefault : '#2C3E50';
+}
+
+/**
+ * Dado el nombre de un ingrediente, devuelve { key, label, color }
+ * si es una salsa detectada, o null si no lo es.
+ * Detección: el nombre debe contener "SALSA" o "BECHAMEL".
+ */
+function parseSalsaIng(ingName) {
+  const n = ingName.toUpperCase();
+  if (!n.includes('SALSA') && !n.includes('BECHAMEL')) return null;
+  // Buscar en las reglas conocidas
+  for (const r of SALSA_RULES) {
+    if (r.re.test(n)) {
+      return { key: r.key, label: r.label, color: getSalsaColor(r.key) };
+    }
+  }
+  // Salsa desconocida: normalizar nombre
+  let raw = n.startsWith('SALSA ') ? n.slice(6).trim() : n;
+  raw = raw.replace(/\(.*?\)/g, '').trim();
+  const key = raw.toLowerCase().replace(/\s+/g, '_');
+  const label = raw.charAt(0) + raw.slice(1).toLowerCase();
+  const color = salsaColors.get(key) || '#2C3E50';
+  if (!salsaColors.has(key)) salsaColors.set(key, color);
+  return { key, label, color };
+}
+
+/**
+ * Devuelve las salsas únicas detectadas en los ingredientes de UNA pizza.
+ * Máximo 2 (para el degradado de doble color).
+ * Retorna array de { key, label, color }.
+ */
+function getSalsasDePizza(p) {
+  const found = [];
+  for (const ing of p.ingredientes) {
+    const s = parseSalsaIng(ing.n);
+    if (s && !found.find(x => x.key === s.key)) {
+      found.push(s);
+      if (found.length >= 2) break;
+    }
+  }
+  return found;
+}
+
+/**
+ * Calcula los colores de fondo de una pizza:
+ * - 0 salsas detectadas → usa color1/color2 guardados en la pizza
+ * - 1 salsa             → color sólido de esa salsa
+ * - 2 salsas            → degradado 50/50 con los dos colores
+ */
+function autoColors(p) {
+  const salsas = getSalsasDePizza(p);
+  if (salsas.length === 0) return { c1: p.color1 || '#2C3E50', c2: p.color2 || null };
+  if (salsas.length === 1) return { c1: salsas[0].color, c2: null };
+  return { c1: salsas[0].color, c2: salsas[1].color };
+}
+
+// ----- FILTROS -----
+
+/**
+ * Extrae las salsas presentes en TODAS las pizzas actuales,
+ * ordenadas según SALSA_RULES primero, luego las desconocidas.
+ */
+function extractSalsasPresentes(pizzaList) {
+  const found = new Map(); // key → { key, label, color }
+  pizzaList.forEach(p => {
+    p.ingredientes.forEach(ing => {
+      const s = parseSalsaIng(ing.n);
+      if (s && !found.has(s.key)) found.set(s.key, s);
+    });
+  });
+  // Ordenar: primero las conocidas según SALSA_RULES, luego las nuevas
+  const knownKeys = SALSA_RULES.map(r => r.key);
+  const sorted = [
+    ...knownKeys.filter(k => found.has(k)).map(k => found.get(k)),
+    ...[...found.values()].filter(s => !knownKeys.includes(s.key)),
+  ];
+  return sorted;
+}
+
+/**
+ * Comprueba si una pizza tiene una salsa concreta (por key normalizada).
+ */
+function pizzaMatchesSalsa(p, key) {
+  if (key === 'todas') return true;
+  return p.ingredientes.some(ing => {
+    const s = parseSalsaIng(ing.n);
+    return s && s.key === key;
+  });
+}
+
+/**
+ * Construye los botones de filtro en #filterGroup.
+ * Click simple → filtrar.
+ * Doble click  → editar color de esa salsa.
+ */
+function buildFilterButtons() {
+  const group = document.getElementById('filterGroup');
+  group.innerHTML = '';
+
+  // Botón "Todas"
+  const btnTodas = document.createElement('button');
+  btnTodas.className = 'filter-btn todas-btn' + (filterSalsa === 'todas' ? ' on' : '');
+  btnTodas.textContent = 'Todas';
+  btnTodas.onclick = () => setFilterSalsa('todas');
+  group.appendChild(btnTodas);
+
+  // Botones de salsa detectados dinámicamente
+  extractSalsasPresentes(pizzas).forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (filterSalsa === s.key ? ' on' : '');
+    btn.dataset.salsaKey = s.key;
+
+    // Dot de color
+    const dot = document.createElement('span');
+    dot.className = 'salsa-dot';
+    dot.style.background = s.color;
+    btn.appendChild(dot);
+    btn.appendChild(document.createTextNode(s.label));
+
+    // Click simple → filtrar (con pequeño delay para no interferir con dblclick)
+    btn.addEventListener('click', e => {
+      if (e.detail === 1) btn._clickTimer = setTimeout(() => setFilterSalsa(s.key), 180);
+    });
+    // Doble click → editar color
+    btn.addEventListener('dblclick', e => {
+      clearTimeout(btn._clickTimer);
+      e.stopPropagation();
+      openSalsaColorPop(s.key, s.label, s.color, btn);
+    });
+
+    group.appendChild(btn);
+  });
+}
+
+function setFilterSalsa(key) {
+  filterSalsa = key;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  const active = document.querySelector(`.filter-btn[data-salsa-key="${key}"]`)
+               || document.querySelector('.todas-btn');
+  if (active) active.classList.add('on');
+  renderAll();
+}
+
+/* ── POPOVER DE COLOR DE SALSA ── */
+let _scpKey = null;
+
+function openSalsaColorPop(key, label, currentColor, anchorEl) {
+  _scpKey = key;
+  document.getElementById('scpTitle2').textContent = 'Color: ' + label;
+  document.getElementById('scpPicker2').value = currentColor;
+  document.getElementById('scpHex2').value = currentColor.toUpperCase();
+  document.getElementById('scpPreview2').style.background = currentColor;
+  document.getElementById('scpPreview2').textContent = label;
+  const pop = document.getElementById('salsaColorPop2');
+  pop.classList.add('visible');
+  // Posicionar cerca del botón
+  const r = anchorEl.getBoundingClientRect();
+  const pw = 230;
+  let left = r.left;
+  if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+  pop.style.left = left + 'px';
+  pop.style.top = (r.bottom + 6) + 'px';
+}
+
+function closeSalsaColorPop() {
+  document.getElementById('salsaColorPop2').classList.remove('visible');
+  _scpKey = null;
+}
+
+function onScp2Picker() {
+  const c = document.getElementById('scpPicker2').value;
+  document.getElementById('scpHex2').value = c.toUpperCase();
+  document.getElementById('scpPreview2').style.background = c;
+}
+
+function onScp2Hex() {
+  let v = document.getElementById('scpHex2').value.trim();
+  if (!v.startsWith('#')) v = '#' + v;
+  if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+    document.getElementById('scpPicker2').value = v;
+    document.getElementById('scpPreview2').style.background = v;
+  }
+}
+
+function applySalsaColor2() {
+  if (!_scpKey) return;
+  const color = document.getElementById('scpPicker2').value;
+  salsaColors.set(_scpKey, color);
+  saveSalsaColors();
+  closeSalsaColorPop();
+  renderAll(); // reconstruye filtros + tarjetas con el nuevo color
+}
+
+function resetSalsaColor2() {
+  if (!_scpKey) return;
+  // Restaurar al color de fábrica de la regla conocida
+  salsaColors.delete(_scpKey);
+  const rule = SALSA_RULES.find(r => r.key === _scpKey);
+  const defColor = rule ? rule.colorDefault : '#2C3E50';
+  salsaColors.set(_scpKey, defColor);
+  saveSalsaColors();
+  document.getElementById('scpPicker2').value = defColor;
+  document.getElementById('scpHex2').value = defColor.toUpperCase();
+  document.getElementById('scpPreview2').style.background = defColor;
+}
+
+// Cerrar popover de salsa al hacer click fuera
+document.addEventListener('click', e => {
+  const pop = document.getElementById('salsaColorPop2');
+  if (pop && pop.classList.contains('visible')
+      && !pop.contains(e.target)
+      && !e.target.closest('[data-salsa-key]')) {
+    closeSalsaColorPop();
+  }
+});
+/* ════════════════════════════════════════════════════════
+   ESTADO UI
+════════════════════════════════════════════════════════ */
+let searchQ='',sortMode='manual',cardDragSrc=null;
+let editModeId=null,popTarget=null,editId=null,ingDragSrc=null;
+
+/* ════════════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════════════ */
+function bgStyle(p){
+  const {c1, c2} = autoColors(p);
+  return c2
+    ? `background:linear-gradient(135deg,${c1} 50%,${c2} 50%)`
+    : `background:${c1}`;
+}
+function isNaranja(v){return /pizca|puñado|toque/i.test(v);}
+function getSorted(list){
+  const a=[...list];
+  if(sortMode==='az')        return a.sort((x,y)=>x.nombre.localeCompare(y.nombre));
+  if(sortMode==='za')        return a.sort((x,y)=>y.nombre.localeCompare(x.nombre));
+  if(sortMode==='color')     return a.sort((x,y)=>x.color1.localeCompare(y.color1));
+  if(sortMode==='peso_asc')  return a.sort((x,y)=>(x.embalado||0)-(y.embalado||0));
+  if(sortMode==='peso_desc') return a.sort((x,y)=>(y.embalado||0)-(x.embalado||0));
+  return a;
+}
+
+function renderAll(){
+  buildFilterButtons();
+  const grid=document.getElementById('grid');
+  let vis=pizzas.filter(p=>pizzaMatchesSalsa(p,filterSalsa)&&p.nombre.toLowerCase().includes(searchQ.toLowerCase()));
+  vis=getSorted(vis);
+  document.getElementById('cnt').textContent=vis.length+' pizzas';
+  grid.innerHTML='';
+  vis.forEach(p=>grid.appendChild(buildCard(p)));
+  if(isAdmin){
+    const a=document.createElement('div');a.className='card-add';a.onclick=openModal;
+    a.innerHTML=`<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg><span>Nueva pizza</span>`;
+    grid.appendChild(a);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   CONSTRUCCIÓN DE TARJETA
+════════════════════════════════════════════════════════ */
+function buildCard(p){
+  const isEdit=(editModeId===p.id);
+  const card=document.createElement('div');
+  card.className='card'+(isEdit?' edit-mode':'');
+  card.dataset.pid=p.id;
+  card.draggable=(isAdmin&&sortMode==='manual'&&!isEdit);
+
+  // Drag & drop de tarjetas (solo admin)
+  card.addEventListener('dragstart',e=>{if(!isAdmin||sortMode!=='manual'||isEdit)return;cardDragSrc=p.id;card.classList.add('card-dragging');e.dataTransfer.effectAllowed='move';});
+  card.addEventListener('dragend',()=>{card.classList.remove('card-dragging');document.querySelectorAll('.card').forEach(c=>c.classList.remove('card-dragover'));});
+  card.addEventListener('dragover',e=>{if(!isAdmin||sortMode!=='manual'||isEdit)return;e.preventDefault();card.classList.add('card-dragover');});
+  card.addEventListener('dragleave',()=>card.classList.remove('card-dragover'));
+  card.addEventListener('drop',e=>{
+    if(!isAdmin||sortMode!=='manual'||isEdit)return;e.preventDefault();card.classList.remove('card-dragover');
+    if(cardDragSrc!=null&&cardDragSrc!==p.id){
+      const si=pizzas.findIndex(x=>x.id===cardDragSrc),ti=pizzas.findIndex(x=>x.id===p.id);
+      const[m]=pizzas.splice(si,1);pizzas.splice(ti,0,m);scheduleSave();renderAll();
+    }
+  });
+
+  const nomCS=getCS(p,'nombre');
+  const nomStyle=`font-family:${nomCS?nomCS.font:"'Bebas Neue',sans-serif"};font-size:${nomCS?nomCS.size:34}px;color:${nomCS?nomCS.color:'#ffffff'};font-weight:${nomCS&&nomCS.bold?800:400};font-style:${nomCS&&nomCS.italic?'italic':'normal'};line-height:1.1;text-shadow:0 1px 3px rgba(0,0,0,0.3);word-break:break-word;`;
+  const avisoCS=getCS(p,'aviso');const notaCS=getCS(p,'nota');
+  const avisoStyle=csStyle(avisoCS)||'font-size:10px;font-weight:700;color:#FFE080;text-transform:uppercase;letter-spacing:.4px;';
+  const notaStyle=csStyle(notaCS)||'font-size:10px;font-weight:600;color:#B8FFB0;';
+
+  const actionsHTML=isAdmin?`<div class="card-head-actions">
+    <button onclick="editPizza(${p.id})">✏️ Datos</button>
+    <button class="${isEdit?'typo-active':''}" onclick="toggleEditMode(${p.id},event)">🔤 Tipografía</button>
+  </div>`:'';
+  const dragHandle=(isAdmin&&sortMode==='manual'&&!isEdit)?'<span class="card-drag-handle">⠿</span>':'';
+
+  function pesoVal(key,val,extraColor){
+    const cs=getCS(p,key);
+    const s=`font-size:${cs?cs.size:13}px;font-weight:800;font-family:${cs?cs.font:"'Open Sans',sans-serif"};font-style:${cs&&cs.italic?'italic':'normal'};color:${cs?cs.color:(extraColor||'#1A1A1A')};`;
+    const ed=isEdit?`class="editable" data-cell="${key}" data-pid="${p.id}"`:'';
+    return `<span ${ed} style="${s}">${val?val+'g':'—'}</span>`;
+  }
+  const pesoHTML=(p.inicio||p.final||p.embalado)?`<div class="pesos">
+    <div class="peso-cell"><span class="peso-label">INDIVIDUAL</span>${pesoVal('pesoInd',p.inicio)}</div>
+    <div class="peso-cell"><span class="peso-label">FINA</span>${pesoVal('pesoFin',p.final)}</div>
+    <div class="peso-cell"><span class="peso-label">ESPONJOSA</span>${pesoVal('pesoEsp',p.embalado,'#C0392B')}</div>
+  </div>`:'';
+
+  const ingsHTML=p.ingredientes.map((ing,i)=>{
+    const nCS=getCS(p,`ing_${i}_name`);const iCS=getCS(p,`ing_${i}_ind`);const mCS=getCS(p,`ing_${i}_med`);
+    const nSt=csStyle(nCS)||'font-size:12px;font-weight:600;color:#1A1A1A;';
+    const iSt=csStyle(iCS)||(ing.ind==='—'?'font-size:11px;font-weight:400;color:#888;text-align:center;':`font-size:11px;font-weight:700;color:${isNaranja(ing.ind)?'#C05A00':'#1A1A1A'};text-align:center;`);
+    const mSt=csStyle(mCS)||(ing.med==='—'?'font-size:11px;font-weight:400;color:#888;text-align:center;':`font-size:11px;font-weight:700;color:${isNaranja(ing.med)?'#C05A00':'#1A1A1A'};text-align:center;`);
+    const en=(k)=>isEdit?`class="editable" data-cell="${k}" data-pid="${p.id}"`:'';
+    return `<div class="ing-row" style="${i%2===1?'background:#FAFAF7':''}">
+      <span class="ing-idx">${i+1}</span>
+      <span ${en(`ing_${i}_name`)} style="${nSt}">${ing.n}</span>
+      <span ${en(`ing_${i}_ind`)} style="${iSt}">${ing.ind}</span>
+      <span ${en(`ing_${i}_med`)} style="${mSt}">${ing.med}</span>
+    </div>`;
+  }).join('');
+
+  const edNom=isEdit?`class="editable" data-cell="nombre" data-pid="${p.id}"`:'';
+  const edAv=isEdit&&p.aviso?`class="editable" data-cell="aviso" data-pid="${p.id}"`:'';
+  const edNt=isEdit&&p.nota?`class="editable" data-cell="nota" data-pid="${p.id}"`:'';
+  const hasPhotos=!!(p.fotoAntes||p.fotoDespues);
+  const footerHTML=isAdmin?`<div class="card-footer"><button class="del-btn" onclick="delPizza(${p.id})">🗑 Eliminar</button></div>`:'';
+
+  function photoSlot(tipo,url,pid){
+    const label=tipo==='antes'?'🔴 Antes del horno':'🟢 Producto acabado';
+    if(url) return `<div class="flip-photo-slot"><div class="flip-photo-label">${label}</div>
+      <div class="flip-photo-img"><img src="${url}" alt="${tipo}">
+        ${isAdmin?`<button class="flip-photo-change" onclick="changePhoto(${pid},'${tipo}',event)">📷 Cambiar</button>`:''}
+      </div></div>`;
+    return `<div class="flip-photo-slot"><div class="flip-photo-label">${label}</div>
+      <div class="flip-photo-img">${isAdmin
+        ?`<div class="flip-photo-empty" onclick="addPhoto(${pid},'${tipo}',event)">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/></svg>
+            Añadir foto</div>`
+        :`<div style="color:rgba(255,255,255,0.2);font-size:12px;font-weight:600;font-family:'Open Sans',sans-serif;text-align:center;padding:16px;">Sin foto</div>`
+      }</div></div>`;
+  }
+
+  card.innerHTML=`<div class="flip-wrapper" id="flip-${p.id}"><div class="flip-inner">
+    <div class="flip-front">
+      <div class="card-head" style="${bgStyle(p)}">
+        ${actionsHTML}${dragHandle}
+        <div ${edNom} style="${nomStyle}">${p.nombre}</div>
+        ${p.aviso?`<div ${edAv} style="${avisoStyle}">⚠️ ${p.aviso}</div>`:''}
+        ${p.nota?`<div ${edNt} style="${notaStyle}">${p.nota}</div>`:''}
+        <button class="flip-indicator${hasPhotos?' has-photos':''}" onclick="flipCard(${p.id},event)">📷 ${hasPhotos?'Ver fotos':'Fotos'}</button>
+      </div>
+      ${pesoHTML}
+      <div class="table-header"><span>Nº</span><span>INGREDIENTE</span><span>IND</span><span>MED</span></div>
+      <div class="ing-list">${ingsHTML}</div>
+      ${footerHTML}
+    </div>
+    <div class="flip-back">
+      <div class="flip-back-head">
+        <span class="flip-back-title">${p.nombre}</span>
+        <button class="flip-back-close" onclick="flipCard(${p.id},event)">← Volver a ficha</button>
+      </div>
+      <div class="flip-photos">
+        ${photoSlot('antes',p.fotoAntes,p.id)}
+        ${photoSlot('despues',p.fotoDespues,p.id)}
+      </div>
+    </div>
+  </div></div>`;
+
+  if(isEdit){
+    card.querySelectorAll('.editable').forEach(el=>{
+      el.addEventListener('click',e=>{e.stopPropagation();openPopover(p.id,el.dataset.cell,el,e);});
+    });
+  }
+  return card;
+}
+
+/* ════════════════════════════════════════════════════════
+   FLIP CARD
+════════════════════════════════════════════════════════ */
+function flipCard(pid,e){
+  if(e) e.stopPropagation();
+  const wrapper=document.querySelector(`#flip-${pid}`);if(!wrapper)return;
+  const isFlipped=wrapper.classList.contains('flipped');
+  const front=wrapper.querySelector('.flip-front');
+  const inner=wrapper.querySelector('.flip-inner');
+  const back=wrapper.querySelector('.flip-back');
+  if(!isFlipped){const h=front.offsetHeight;inner.style.height=Math.max(h,280)+'px';back.style.height=Math.max(h,280)+'px';}
+  else{inner.style.height='';back.style.height='';}
+  wrapper.classList.toggle('flipped');
+}
+
+/* ════════════════════════════════════════════════════════
+   FOTOS
+════════════════════════════════════════════════════════ */
+let _photoInput=null;
+function getPhotoInput(){
+  if(!_photoInput){_photoInput=document.createElement('input');_photoInput.type='file';_photoInput.accept='image/*';_photoInput.style.display='none';document.body.appendChild(_photoInput);}
+  return _photoInput;
+}
+function addPhoto(pid,tipo,e){
+  if(e) e.stopPropagation();
+  const inp=getPhotoInput();inp.onchange=null;
+  inp.onchange=()=>{
+    const file=inp.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');const MAX=800;
+        let w=img.width,h=img.height;
+        if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+        canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+        const compressed=canvas.toDataURL('image/jpeg',0.82);
+        const p=pizzas.find(x=>x.id===pid);if(!p)return;
+        if(tipo==='antes')p.fotoAntes=compressed;else p.fotoDespues=compressed;
+        scheduleSave();renderAll();
+        setTimeout(()=>{const w2=document.querySelector(`#flip-${pid}`);if(w2&&!w2.classList.contains('flipped'))flipCard(pid);},50);
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);inp.value='';
+  };
+  inp.click();
+}
+function changePhoto(pid,tipo,e){addPhoto(pid,tipo,e);}
+
+/* ════════════════════════════════════════════════════════
+   MODO TIPOGRAFÍA
+════════════════════════════════════════════════════════ */
+function toggleEditMode(pid,e){
+  e.stopPropagation();if(!isAdmin)return;
+  if(editModeId===pid){exitEditMode();return;}
+  editModeId=pid;
+  const p=pizzas.find(x=>x.id===pid);
+  document.getElementById('editBanner').classList.add('visible');
+  document.getElementById('editBannerName').textContent=p.nombre;
+  closePopover();renderAll();
+}
+function exitEditMode(){
+  editModeId=null;
+  document.getElementById('editBanner').classList.remove('visible');
+  closePopover();renderAll();
+}
+
+/* ════════════════════════════════════════════════════════
+   POPOVER TIPOGRAFÍA
+════════════════════════════════════════════════════════ */
+const CELL_LABELS={nombre:'Nombre',pesoInd:'Peso · Individual',pesoFin:'Peso · Fina',pesoEsp:'Peso · Esponjosa',aviso:'Aviso especial',nota:'Nota de cocina'};
+function cellLabel(key){
+  if(CELL_LABELS[key])return CELL_LABELS[key];
+  const m=key.match(/ing_(\d+)_(name|ind|med)/);
+  if(m){const p=pizzas.find(x=>x.id===editModeId);const nm=p?p.ingredientes[+m[1]]?.n||`#${+m[1]+1}`:`#${+m[1]+1}`;const col=m[2]==='name'?'Nombre':m[2]==='ind'?'IND':'MED';return `${nm} · ${col}`;}
+  return key;
+}
+function openPopover(pid,cellKey,el,e){
+  popTarget={pid,cellKey,el};
+  const p=pizzas.find(x=>x.id===pid);const cs=p.celulas[cellKey]||defCS(cellKey);
+  document.getElementById('popTitle').textContent=cellLabel(cellKey);
+  document.getElementById('popFont').value=cs.font;document.getElementById('popSize').value=cs.size;
+  document.getElementById('popColor').value=cs.color;
+  document.getElementById('popBold').classList.toggle('on',!!cs.bold);
+  document.getElementById('popItalic').classList.toggle('on',!!cs.italic);
+  const pop=document.getElementById('cellPopover');pop.classList.add('visible');
+  positionPopover(e.clientX,e.clientY);livePreview();
+  document.querySelectorAll('.editable').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');
+}
+function positionPopover(cx,cy){
+  const pop=document.getElementById('cellPopover');pop.style.left='0px';pop.style.top='0px';
+  const pw=pop.offsetWidth||320,ph=pop.offsetHeight||220,vw=window.innerWidth,vh=window.innerHeight;
+  let x=cx+12,y=cy+12;
+  if(x+pw>vw-10)x=cx-pw-12;if(y+ph>vh-10)y=cy-ph-12;if(x<10)x=10;if(y<10)y=10;
+  pop.style.left=x+'px';pop.style.top=y+'px';
+}
+function closePopover(){
+  document.getElementById('cellPopover').classList.remove('visible');
+  document.querySelectorAll('.editable').forEach(e=>e.classList.remove('selected'));popTarget=null;
+}
+function togglePop(id){document.getElementById(id).classList.toggle('on');livePreview();}
+function livePreview(){
+  const font=document.getElementById('popFont').value,size=document.getElementById('popSize').value;
+  const color=document.getElementById('popColor').value;
+  const bold=document.getElementById('popBold').classList.contains('on');
+  const italic=document.getElementById('popItalic').classList.contains('on');
+  const prev=document.getElementById('popPreview');
+  prev.style.cssText=`font-family:${font};font-size:${size}px;color:${color};font-weight:${bold?800:400};font-style:${italic?'italic':'normal'}`;
+  if(popTarget){
+    const p=pizzas.find(x=>x.id===popTarget.pid);const key=popTarget.cellKey;
+    if(key==='nombre')prev.textContent=p.nombre;
+    else if(key.endsWith('_name')){const i=+key.match(/\d+/)[0];prev.textContent=p.ingredientes[i]?.n||'Ingrediente';}
+    else if(key.endsWith('_ind')){const i=+key.match(/\d+/)[0];prev.textContent=p.ingredientes[i]?.ind||'IND';}
+    else if(key.endsWith('_med')){const i=+key.match(/\d+/)[0];prev.textContent=p.ingredientes[i]?.med||'MED';}
+    else if(key==='pesoInd')prev.textContent=p.inicio?p.inicio+'g':'—';
+    else if(key==='pesoFin')prev.textContent=p.final?p.final+'g':'—';
+    else if(key==='pesoEsp')prev.textContent=p.embalado?p.embalado+'g':'—';
+    else if(key==='aviso')prev.textContent=p.aviso||'Aviso';
+    else if(key==='nota')prev.textContent=p.nota||'Nota';
+  }
+}
+function applyCell(){
+  if(!popTarget)return;
+  const p=pizzas.find(x=>x.id===popTarget.pid);if(!p.celulas)p.celulas={};
+  p.celulas[popTarget.cellKey]={
+    font:document.getElementById('popFont').value,
+    size:parseInt(document.getElementById('popSize').value)||12,
+    color:document.getElementById('popColor').value,
+    bold:document.getElementById('popBold').classList.contains('on'),
+    italic:document.getElementById('popItalic').classList.contains('on'),
+  };
+  scheduleSave();closePopover();renderAll();
+}
+function resetCell(){
+  if(!popTarget)return;
+  const p=pizzas.find(x=>x.id===popTarget.pid);if(p.celulas)delete p.celulas[popTarget.cellKey];
+  scheduleSave();closePopover();renderAll();
+}
+
+/* ════════════════════════════════════════════════════════
+   FILTRO / ORDEN / BÚSQUEDA
+════════════════════════════════════════════════════════ */
+function doSearch(v){searchQ=v;renderAll();}
+function setSort(v){sortMode=v;renderAll();}
+
+/* ════════════════════════════════════════════════════════
+   PALETA DE COLORES
+════════════════════════════════════════════════════════ */
+let selC1='#4A7C3F',selC2='#6B4F9E',use2=false;
+function buildSwatches(n){
+  const c=document.getElementById('swatches'+n);c.innerHTML='';
+  PRESETS.forEach(pr=>{const s=document.createElement('div');s.className='swatch';s.style.background=pr.c;s.title=pr.l;s.onclick=()=>selColor(n,pr.c);c.appendChild(s);});
+}
+function selColor(n,hex){
+  if(n===1)selC1=hex;else selC2=hex;
+  document.getElementById('cpick'+n).value=hex;
+  document.getElementById('chex'+n).value=hex.toUpperCase();
+  document.querySelectorAll('#swatches'+n+' .swatch').forEach(s=>s.classList.toggle('selected',hexNorm(s.style.background)===hex.toLowerCase()));
+  refreshColorPrev();
+}
+function onPickerChange(n){selColor(n,document.getElementById('cpick'+n).value);}
+function onHexChange(n){let v=document.getElementById('chex'+n).value.trim();if(!v.startsWith('#'))v='#'+v;if(/^#[0-9a-fA-F]{6}$/.test(v)){document.getElementById('cpick'+n).value=v;selColor(n,v);}}
+function hexNorm(c){const m=c.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);if(!m)return c.toLowerCase();return'#'+[m[1],m[2],m[3]].map(x=>parseInt(x).toString(16).padStart(2,'0')).join('');}
+function refreshColorPrev(){
+  const bar=document.getElementById('colorPreviewBar');
+  bar.style.background=use2?`linear-gradient(135deg,${selC1} 50%,${selC2} 50%)`:selC1;
+  bar.textContent=document.getElementById('fNombre').value||'Vista previa';
+}
+function toggleDosColores(){
+  use2=document.getElementById('chkDos').checked;
+  document.getElementById('slot2').classList.toggle('hidden',!use2);
+  document.getElementById('label1').textContent=use2?'1.er color':'Color principal';
+  refreshColorPrev();
+}
+
+/* ════════════════════════════════════════════════════════
+   MODAL — nueva/editar pizza
+════════════════════════════════════════════════════════ */
+function openModal(){
+  if(!isAdmin)return;
+  editId=null;document.getElementById('mTitle').textContent='Nueva Pizza';
+  ['fNombre','fAviso','fNota','fInicio','fFinal','fEmbalado'].forEach(id=>document.getElementById(id).value='');
+  use2=false;document.getElementById('chkDos').checked=false;
+  document.getElementById('slot2').classList.add('hidden');document.getElementById('label1').textContent='Color principal';
+  selColor(1,'#4A7C3F');selColor(2,'#6B4F9E');
+  document.getElementById('ingList').innerHTML='';addIngRow();addIngRow();addIngRow();
+  document.getElementById('overlay').classList.add('open');
+}
+function editPizza(id){
+  if(!isAdmin)return;
+  const p=pizzas.find(x=>x.id===id);if(!p)return;
+  editId=id;document.getElementById('mTitle').textContent='Editar · '+p.nombre;
+  document.getElementById('fNombre').value=p.nombre;document.getElementById('fAviso').value=p.aviso||'';
+  document.getElementById('fNota').value=p.nota||'';document.getElementById('fInicio').value=p.inicio||'';
+  document.getElementById('fFinal').value=p.final||'';document.getElementById('fEmbalado').value=p.embalado||'';
+  use2=!!p.color2;document.getElementById('chkDos').checked=use2;
+  document.getElementById('slot2').classList.toggle('hidden',!use2);
+  document.getElementById('label1').textContent=use2?'1.er color':'Color principal';
+  selColor(1,p.color1||'#4A7C3F');selColor(2,p.color2||'#6B4F9E');
+  document.getElementById('ingList').innerHTML='';p.ingredientes.forEach(i=>addIngRow(i.n,i.ind,i.med));
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+
+function addIngRow(n='',ind='',med=''){
+  const list=document.getElementById('ingList');
+  const row=document.createElement('div');row.className='ing-edit-row';row.draggable=true;
+  row.innerHTML=`<span class="drag-handle">⠿</span>
+    <input type="text" placeholder="Ingrediente" value="${esc(n)}">
+    <input type="text" placeholder="IND" value="${esc(ind)}">
+    <input type="text" placeholder="MED" value="${esc(med)}">
+    <button class="rm-btn" onclick="this.parentElement.remove()">✕</button>`;
+  row.addEventListener('dragstart',e=>{ingDragSrc=row;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragend',()=>{ingDragSrc=null;row.classList.remove('dragging');document.querySelectorAll('.ing-edit-row').forEach(r=>r.classList.remove('drag-over'));});
+  row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
+  row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+  row.addEventListener('drop',e=>{
+    e.preventDefault();row.classList.remove('drag-over');
+    if(ingDragSrc&&ingDragSrc!==row){
+      const l=document.getElementById('ingList'),rows=[...l.children];
+      const si=rows.indexOf(ingDragSrc),ti=rows.indexOf(row);
+      if(si<ti)l.insertBefore(ingDragSrc,row.nextSibling);else l.insertBefore(ingDragSrc,row);
+    }
+  });
+  row.querySelectorAll('input').forEach(i=>{i.addEventListener('mousedown',e=>e.stopPropagation());i.addEventListener('dragstart',e=>e.stopPropagation());});
+  list.appendChild(row);
+}
+function esc(s){return(s||'').replace(/"/g,'&quot;');}
+
+function savePizza(){
+  if(!isAdmin)return;
+  const nombre=document.getElementById('fNombre').value.trim().toUpperCase();
+  if(!nombre){alert('Escribe el nombre');return;}
+  const rows=document.querySelectorAll('#ingList .ing-edit-row');const ings=[];
+  rows.forEach(r=>{const ins=r.querySelectorAll('input');const n=ins[0].value.trim().toUpperCase();if(n)ings.push({n,ind:ins[1].value.trim()||'—',med:ins[2].value.trim()||'—'});});
+  const catMap={'#4A7C3F':'bbq','#6B4F9E':'barbacoa','#7A4E2D':'burger','#C0392B':'tomate','#4A6FA5':'bechamel','#C07A1A':'ajo','#3D6B5E':'trufa','#2C3E50':'especial'};
+  const data={nombre,color1:selC1,color2:use2?selC2:null,cat:catMap[selC1]||'especial',
+    aviso:document.getElementById('fAviso').value.trim(),nota:document.getElementById('fNota').value.trim(),
+    inicio:parseInt(document.getElementById('fInicio').value)||null,
+    final:parseInt(document.getElementById('fFinal').value)||null,
+    embalado:parseInt(document.getElementById('fEmbalado').value)||null,ingredientes:ings};
+  if(editId){
+    const p=pizzas.find(x=>x.id===editId);
+    const preserve={fotoAntes:p.fotoAntes,fotoDespues:p.fotoDespues,celulas:p.celulas};
+    Object.assign(p,data,preserve);
+  } else {
+    pizzas.push(mkP(data.nombre,data.color1,data.color2,data.aviso,data.nota,data.inicio,data.final,data.embalado,data.cat,data.ingredientes));
+  }
+  scheduleSave();closeModal();renderAll();
+}
+function delPizza(id){
+  if(!isAdmin)return;
+  if(!confirm('¿Eliminar esta pizza?'))return;
+  pizzas=pizzas.filter(p=>p.id!==id);scheduleSave();renderAll();
+}
+
+/* ════════════════════════════════════════════════════════
+   EVENTOS GLOBALES
+════════════════════════════════════════════════════════ */
+document.addEventListener('click',e=>{
+  const pop=document.getElementById('cellPopover');
+  if(pop.classList.contains('visible')&&!pop.contains(e.target)&&!e.target.classList.contains('editable'))closePopover();
+});
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ════════════════════════════════════════════════════════
+   PAGINACIÓN DE IMPRESIÓN
+   Antes de imprimir, reorganiza las fichas en bloques
+   de 6 (un grid por página A3).
+   Al terminar, restaura el DOM original.
+════════════════════════════════════════════════════════ */
+let _printContainer=null; // referencia al contenedor temporal de impresión
+
+function prepararImpresion(){
+  // Recoge todas las fichas actuales del grid (excluye .card-add)
+  const gridOrig=document.getElementById('grid');
+  const fichas=[...gridOrig.querySelectorAll('.card:not(.card-add)')];
+  if(!fichas.length) return;
+
+  // Crea un contenedor wrapper que reemplaza temporalmente al body
+  _printContainer=document.createElement('div');
+  _printContainer.id='print-pages';
+
+  const PAGE_SIZE=6;
+  for(let i=0;i<fichas.length;i+=PAGE_SIZE){
+    const grupo=fichas.slice(i,i+PAGE_SIZE);
+    const page=document.createElement('div');
+    page.className='print-page';
+    grupo.forEach(f=>{
+      // Clon profundo para no mover el DOM original
+      page.appendChild(f.cloneNode(true));
+    });
+    _printContainer.appendChild(page);
+  }
+
+  document.body.appendChild(_printContainer);
+  // Oculta el grid original durante la impresión
+  gridOrig.style.display='none';
+}
+
+function restaurarDespuesImpresion(){
+  if(_printContainer){
+    _printContainer.remove();
+    _printContainer=null;
+  }
+  document.getElementById('grid').style.display='';
+}
+
+// Sobrescribe el botón de imprimir para usar la lógica de paginación
+window.imprimirFichas=function(){
+  prepararImpresion();
+  setTimeout(()=>{
+    window.print();
+    // Restaurar tras un pequeño delay para que el diálogo de impresión
+    // tenga tiempo de capturar el DOM
+    setTimeout(restaurarDespuesImpresion, 1000);
+  },120);
+};
+
+// También engancha al evento nativo beforeprint/afterprint
+window.addEventListener('beforeprint', prepararImpresion);
+window.addEventListener('afterprint',  restaurarDespuesImpresion);
+
+/* ════════════════════════════════════════════════════════
+   INICIALIZACIÓN
+════════════════════════════════════════════════════════ */
+buildSwatches(1);buildSwatches(2);
+selColor(1,'#4A7C3F');selColor(2,'#6B4F9E');
+loadSalsaColors();  // carga colores personalizados de salsas desde localStorage
+initAdminState();   // recupera estado admin y aplica triple clic
+applyAdminMode();   // aplica clases CSS
+// loadSaved es ahora async (carga desde servidor); esperamos antes de renderizar
+(async()=>{
+  await loadSaved();
+  renderAll();
+})();
+
+// Reemplaza el botón de imprimir del header para usar la función paginada
+document.querySelector('.btn-print').onclick=()=>imprimirFichas();
+
+</script>
+</body>
+</html>

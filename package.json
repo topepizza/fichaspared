@@ -1,0 +1,9 @@
+{
+  "name": "topepizza-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TopePizza - Fichas de recetas con persistencia compartida via Vercel KV",
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
+  }
+}
